@@ -17,16 +17,23 @@
 */
 package net.hydromatic.optiq.impl.csv;
 
-import net.hydromatic.optiq.*;
+import net.hydromatic.optiq.SchemaPlus;
+import net.hydromatic.optiq.Statistic;
+import net.hydromatic.optiq.Statistics;
+import net.hydromatic.optiq.TranslatableTable;
 import net.hydromatic.optiq.impl.AbstractTableQueryable;
 import net.hydromatic.optiq.impl.java.AbstractQueryableTable;
 import net.hydromatic.optiq.impl.java.JavaTypeFactory;
-import net.hydromatic.optiq.rules.java.EnumerableConvention;
-import net.hydromatic.optiq.rules.java.JavaRules;
+//import net.hydromatic.optiq.rules.java.EnumerableConvention;
 
-import net.hydromatic.linq4j.*;
+import net.hydromatic.linq4j.AbstractEnumerable;
+import net.hydromatic.linq4j.Enumerable;
+import net.hydromatic.linq4j.Enumerator;
+import net.hydromatic.linq4j.QueryProvider;
+import net.hydromatic.linq4j.Queryable;
 
 import org.eigenbase.rel.RelNode;
+import org.eigenbase.relopt.RelOptCluster;
 import org.eigenbase.relopt.RelOptTable;
 import org.eigenbase.reltype.*;
 import org.eigenbase.util.Pair;
@@ -77,6 +84,7 @@ public class CsvTable extends AbstractQueryableTable
       SchemaPlus schema, String tableName) {
     return new AbstractTableQueryable<T>(queryProvider, schema, this,
         tableName) {
+      @SuppressWarnings("unchecked")
       public Enumerator<T> enumerator() {
         //noinspection unchecked
         return (Enumerator<T>) new CsvEnumerator(file,
@@ -98,11 +106,20 @@ public class CsvTable extends AbstractQueryableTable
   public RelNode toRel(
       RelOptTable.ToRelContext context,
       RelOptTable relOptTable) {
-    return new JavaRules.EnumerableTableAccessRel(
-        context.getCluster(),
-        context.getCluster().traitSetOf(EnumerableConvention.INSTANCE),
-        relOptTable,
-        (Class) getElementType());
+
+    RelOptCluster cluster = context.getCluster();
+
+//    System.err.println("\n\ntoRel");
+//
+//    System.err.println("Cluster: " + cluster);
+//    System.err.println("TraitSet: "
+//      + cluster.traitSetOf(EnumerableConvention.INSTANCE));
+//    System.err.println("Table: " + relOptTable);
+
+    return new CsvTableAccessRel(cluster
+      , relOptTable
+      , (Class<?>) getElementType()
+    );
   }
 
   /** Deduces the names and types of a table's columns by reading the first line

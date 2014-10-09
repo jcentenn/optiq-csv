@@ -64,6 +64,7 @@ public class JsonTable extends AbstractQueryableTable
       SchemaPlus schema, String tableName) {
     return new AbstractTableQueryable<T>(queryProvider, schema, this,
         tableName) {
+      @SuppressWarnings("unchecked")
       public Enumerator<T> enumerator() {
         //noinspection unchecked
         return (Enumerator<T>) new JsonEnumerator(file);
@@ -87,7 +88,7 @@ public class JsonTable extends AbstractQueryableTable
         context.getCluster(),
         context.getCluster().traitSetOf(EnumerableConvention.INSTANCE),
         relOptTable,
-        (Class) getElementType());
+        (Class<?>) getElementType());
   }
 }
 

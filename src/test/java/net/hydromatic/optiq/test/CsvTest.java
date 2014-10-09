@@ -129,7 +129,8 @@ public class CsvTest {
   @Test public void testPushDownProjectDumb() throws SQLException {
     // rule does not fire, because we're using 'dumb' tables in simple model
     checkSql("model", "explain plan for select * from EMPS",
-        "PLAN=EnumerableTableAccessRel(table=[[SALES, EMPS]])\n");
+//        "PLAN=CsvTableAccessRel(table=[[SALES, EMPS]])\n");
+      "PLAN=EnumerableTableAccessRel(table=[[SALES, EMPS]])\n");
   }
 
   @Test public void testPushDownProject() throws SQLException {

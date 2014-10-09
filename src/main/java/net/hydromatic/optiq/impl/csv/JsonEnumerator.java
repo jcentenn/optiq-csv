@@ -30,6 +30,7 @@ import java.util.List;
 class JsonEnumerator implements Enumerator<Object> {
   private final Enumerator<Object> enumerator;
 
+  @SuppressWarnings("unchecked")
   public JsonEnumerator(File file) {
     try {
       final ObjectMapper mapper = new ObjectMapper();
